@@ -2,10 +2,15 @@ package sk.csirt.viruschecker.driver.antivirus
 
 import mu.KotlinLogging
 import sk.csirt.viruschecker.driver.config.AntivirusType
+import sk.csirt.viruschecker.driver.utils.ProcessRunner
 
 class Eset(
-    scanCommand: RunProgramCommand
-) : CommandLineAntivirus(scanCommand) {
+    scanCommand: RunProgramCommand,
+    processRunner: ProcessRunner
+) : CommandLineAntivirus(
+    scanCommand,
+    processRunner
+) {
 
     private val logger = KotlinLogging.logger { }
 
@@ -41,6 +46,18 @@ class Eset(
             malwareDescription = "",
             virusDatabaseVersion = ""
         )
+        val databaseVersion = rawReport.first {
+            "Module scanner" in it
+        }.split(",")[1]
+            .substring(" version ".length)
+
+        if (status == ScanStatusResult.OK) {
+            return Report(
+                status = status,
+                malwareDescription = "is OK",
+                virusDatabaseVersion = databaseVersion
+            )
+        }
 
         return reports.filter { it.status == status }
             .reduce { acc, reportLine ->
@@ -48,9 +65,7 @@ class Eset(
                     malwareDescription = "${acc.malwareDescription}, ${reportLine.malwareDescription}"
                 )
             }.copy(
-                virusDatabaseVersion = rawReport.first {
-                    "Module scanner" in it
-                }.split(",")[1].substring(" version ".length)
+                virusDatabaseVersion = databaseVersion
             )
     }
 }

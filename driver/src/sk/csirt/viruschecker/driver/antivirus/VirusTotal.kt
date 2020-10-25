@@ -2,14 +2,17 @@ package sk.csirt.viruschecker.driver.antivirus
 
 import com.kanishka.virustotalv2.VirusTotalConfig
 import com.kanishka.virustotalv2.VirustotalPublicV2Impl
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import sk.csirt.viruschecker.driver.config.AntivirusType
 import sk.csirt.viruschecker.driver.config.DriverPropertiesFactory
 import sk.csirt.viruschecker.hash.sha256
 
-class VirusTotal(apiKey: String) : ExternalAntivirus, AutoDetectable {
+class VirusTotal(
+    apiKey: String,
+    private val virusTotalApiImplementation: VirustotalPublicV2Impl = VirustotalPublicV2Impl()
+) : ExternalAntivirus, AutoDetectable {
     private val logger = KotlinLogging.logger { }
 
     init {
@@ -19,11 +22,10 @@ class VirusTotal(apiKey: String) : ExternalAntivirus, AutoDetectable {
     override val antivirusName: String = AntivirusType.VIRUS_TOTAL.antivirusName
 
     override suspend fun externalScanFile(params: FileScanParameters): FileScanResult {
-        val virusTotalRef = VirustotalPublicV2Impl()
         val fileToScan = params.fileToScan
-        val sha256 = fileToScan.sha256().value
+        val sha256 = fileToScan.sha256()
         val scanInformation =
-            runCatching { withContext(Dispatchers.IO) { virusTotalRef.getScanReport(sha256) } }
+            runCatching { withContext(IO) { virusTotalApiImplementation.getScanReport(sha256) } }
                 .onFailure {
                     logger.error {
                         "VirusTotal error for file ${fileToScan.canonicalPath}. " +

@@ -1,11 +1,11 @@
-Deploy driver program on Linux based virtual machines 
-=====================================================
+Deploy driver program on a Linux based virtual machine 
+======================================================
 
 We will use the Linux based VM, more specifically the Ubuntu 18.04 VM.
 Any modern linux distribution is, however, equally suitable.
 
-1 Create virtual machines
--------------------------
+1 Create virtual machine
+------------------------
 
 These steps describe how to setup Ubuntu 18.04 VM in VirtualBox.
 
@@ -76,8 +76,8 @@ Copy the driver executable *jar* file from  **host** located at
 `.../driver/build/libs/driver-[VERSION]-all.jar`
 to the virtual machine. 
 If the Guest Additions are working properly then you may just drag & drop the file from your 
-system's file manager to the virtual machine.
-Place the *jar* file to some reasonable and easy-to-find location, perhaps `~/virus-checker` where 
+host system's file manager to the virtual machine.
+Place the *jar* file to some reasonable and easy-to-find location on the guest, perhaps `~/virus-checker` where 
 `~` denotes your home directory. 
 
 #### 1.2.3 (Optional)  Take a snapshot
@@ -97,22 +97,26 @@ Driver program currently supports the aforementioned AVs on Windows: Comodo.
 
 ### 2.1 Comodo
 
+###### On Ubuntu 18.04, this AV needs older libssl library than the one shipped with the distribution. This may cause incompatibility with other AVs.
+ 
+
 To install *Comodo Antivirus* open terminal and execute the following commands.
 
-* Install the *libssl* library.
+* Install the *libssl0.9.8* library.
     ```bash
-    sudo apt install libssl
+    wget archive.ubuntu.com/ubuntu/pool/universe/o/openssl098/libssl0.9.8_0.9.8o-7ubuntu3.2_amd64.deb	
+
+    sudo dpkg -i libssl0.9.8_0.9.8o-7ubuntu3.2_amd64.deb
+
+    sudo apt-get install -f
     ```
-* Download the installation package
-    ```bash
-    wget http://download.comodo.com/cis/download/installs/linux/cav-linux_x64.deb
-    ```
+
 * Install the antivirus
     ```bash
+    wget http://download.comodo.com/cis/download/installs/linux/cav-linux_x64.deb
+
     sudo gdebi -n cav-linux_x64.deb
-    ``` 
-* Run the post installation script
-    ```bash
+
     sudo /opt/COMODO/post_setup.sh
     ``` 
   
@@ -124,26 +128,10 @@ Open the Comodo window and click on the *Antivirus* tab at the top side of the w
 
 * In the *Scanner Settings* disable the *Real-Time Scanning* option.
 
-
-* In the *Protection* tab permanently disable the *Core shields*, *Ransomware Shield*, 
-*Firewall* and *Real site* features. 
-
-* In the *Privacy* tab, disable the *Sensitive Data Shield*.
-
-* In the *Detection engine* -> *HIPS* tab, make sure the *Enable HIPS* option is disabled. 
-
-* In the *Licensing* window click on the green symbol `x` located to the right of 
-*License key* label.
-
-* In the *Firewall* tab, uncheck the *Enable Firewall* option.  
-
-* In the *Web and email* tab, uncheck the *Enable application protocol content filtering* option.  
-
 #### 2.1.2 Command line utility
 
 Comodo provides the command line utility called *cmdscan* that may be used to scan the 
 selected file for malware.
 It should be located at `/opt/COMODO`.
-The driver is preconfigured to this location and therefore no additional settings should be 
-necessary. 
+The driver is preconfigured to this location and therefore no additional settings are required. 
 

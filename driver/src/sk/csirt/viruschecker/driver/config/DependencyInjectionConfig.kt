@@ -5,29 +5,60 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import sk.csirt.viruschecker.driver.antivirus.*
 import sk.csirt.viruschecker.driver.parsedArgs
+import sk.csirt.viruschecker.driver.utils.ProcessRunner
+import sk.csirt.viruschecker.driver.utils.WindowsRegistry
 
 internal val defaultAntivirusQualifier = named("antivirus")
 
 val driverDependencyInjectionModule = module {
 
+    single {
+        ProcessRunner()
+    }
+
+    single {
+        WindowsRegistry()
+    }
+
+
+    single<Antivirus>(AntivirusType.DUMMY) {
+        DummyAntivirus()
+    }
+
     single<Antivirus>(AntivirusType.AVAST) {
-        Avast(RunProgramCommand(getProperty(Properties.avast)))
+        Avast(
+            RunProgramCommand(getProperty(Properties.avast)),
+            get()
+        )
     }
 
     single<Antivirus>(AntivirusType.ESET) {
-        Eset(RunProgramCommand(getProperty(Properties.eset)))
+        Eset(
+            RunProgramCommand(getProperty(Properties.eset)),
+            get()
+        )
     }
 
     single<Antivirus>(AntivirusType.KASPERSKY) {
-        Kaspersky(RunProgramCommand(getProperty(Properties.kaspersky)))
+        Kaspersky(
+            RunProgramCommand(getProperty(Properties.kaspersky)),
+            get()
+        )
     }
 
     single<Antivirus>(AntivirusType.MICROSOFT) {
-        Microsoft(RunProgramCommand(getProperty(Properties.microsoft)))
+        Microsoft(
+            RunProgramCommand(getProperty(Properties.microsoft)),
+            get(),
+            get()
+        )
     }
 
     single<Antivirus>(AntivirusType.COMODO) {
-        Comodo(RunProgramCommand(getProperty(Properties.comodo)))
+        Comodo(
+            RunProgramCommand(getProperty(Properties.comodo)),
+            get()
+        )
     }
 
     single<Antivirus>(AntivirusType.VIRUS_TOTAL) {

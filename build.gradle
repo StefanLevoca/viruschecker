@@ -13,7 +13,7 @@ allprojects {
     group 'sk.csirt.viruschecker'
     version app_version
     apply plugin: 'idea'
-    
+
     idea {
         module {
             downloadSources = true
@@ -37,16 +37,37 @@ subprojects {
         test.kotlin.srcDirs = test.java.srcDirs = ['test']
         main.resources.srcDirs = ['resources']
         test.resources.srcDirs = ['testresources']
+
+//        testIntegration{
+//            kotlin.srcDirs = java.srcDirs = ['testintegration']
+//            resources.srcDirs = ['testintegrationresources']
+//        }
     }
+
+//    configurations {
+//        testIntegrationCompile.extendsFrom testCompile
+//        testIntegrationRuntime.extendsFrom testRuntime
+//    }
+
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         compile "io.ktor:ktor-locations:$ktor_version"
         compile "ch.qos.logback:logback-classic:$logback_version"
         compile "com.xenomachina:kotlin-argparser:$argparser_version"
-        compile "io.github.microutils:kotlin-logging:$koltin_logger_version"
+        compile "io.github.microutils:kotlin-logging:$kotlin_logger_version"
         compile "commons-io:commons-io:$apache_commons_io_version"
+
+        testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+        testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.2"
+        testImplementation "io.mockk:mockk:$mockk_version"
     }
+
+//    task testIntegration(type: Test) {
+//        testClassesDirs = sourceSets.testIntegration.output.classesDirs
+//        classpath = sourceSets.testIntegration.runtimeClasspath
+//    }
+
 
     compileKotlin {
         kotlinOptions {
@@ -63,4 +84,11 @@ subprojects {
             jvmTarget = '1.8'
         }
     }
+
+//    compileTestIntegrationKotlin {
+//        kotlinOptions {
+//            jvmTarget = '1.8'
+//        }
+//    }
+
 }

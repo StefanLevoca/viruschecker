@@ -19,7 +19,7 @@ class PersistentScanReportService(
             reports = response.report.results.map {
                 AntivirusReportEntity(
                     antivirus = it.antivirus,
-                    status = it.status.name,
+                    status = it.status,
                     malwareDescription = it.malwareDescription,
                     virusDatabaseVersion = it.virusDatabaseVersion
                 )
@@ -30,10 +30,14 @@ class PersistentScanReportService(
     override suspend fun findBySha256(hash: String): FileHashScanResponse? =
         reportRepository.findBySha256(hash)?.toFileHashScanResponse()
 
-    override suspend fun findAll(): List<FileHashScanResponse> {
-        return reportRepository.findAll().map {
+    override suspend fun findAll(): List<FileHashScanResponse> =
+        reportRepository.findAll().map {
             it.toFileHashScanResponse()
         }
-    }
+
+    override suspend fun findBy(searchWords: Iterable<String>): List<FileHashScanResponse> =
+        reportRepository.findBy(searchWords).map {
+            it.toFileHashScanResponse()
+        }
 
 }

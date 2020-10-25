@@ -1,28 +1,28 @@
 package sk.csirt.viruschecker.client.reporting
 
 import sk.csirt.viruschecker.routing.payload.FileHashScanResponse
-import sk.csirt.viruschecker.routing.payload.ScanStatusResponse
+import sk.csirt.viruschecker.routing.payload.ScanStatus
 
 class CommandLineReporter : Reporter {
 
-    override fun saveReport(result: FileHashScanResponse) {
+    override fun saveReport(scanResponse: FileHashScanResponse) {
 
-        val headerMessage = "Scan report for file ${result.report.filename}"
+        val headerMessage = "Scan report for file ${scanResponse.report.filename}"
         val headerDelimiter = "-".repeat(80)
 
         """
 $headerDelimiter
 $headerMessage
 $headerDelimiter
-Scan result: ${result.report.status}
+Scan scanResponse: ${scanResponse.report.status}
 
-SHA-256: ${result.sha256}
-  SHA-1: ${result.sha1}
-    MD5: ${result.md5}
+SHA-256: ${scanResponse.sha256}
+  SHA-1: ${scanResponse.sha1}
+    MD5: ${scanResponse.md5}
     
 Antivirus reports:
-${result.report.results.joinToString("\n") {
-            if(it.status==ScanStatusResponse.INFECTED)
+${scanResponse.report.results.joinToString("\n") {
+            if(it.status==ScanStatus.INFECTED)
                 "${it.antivirus}: ${it.status} (${it.malwareDescription}), " +
                         "db_version: ${it.virusDatabaseVersion}"
             else
